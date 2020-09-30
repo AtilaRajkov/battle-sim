@@ -22,4 +22,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::get('/create-game', 'Api\GameController@create_game')
   ->name('create.game');
 
-// **Add Army**
+// **Add army**
+Route::post('/add-army', 'Api\ArmyController@add_army')
+  ->name('add.army');
