@@ -74,9 +74,36 @@
 
     </div>
 
-    <div style="background-color: lightcoral;" class="col-6">
+    <div
+{{--        style="background-color: lightcoral;"--}}
+         class="col-6">
 
-      <h2>Battle (army list)</h2>
+      <h2>Battle (game id) {{ $game_id }}</h2>
+
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Name</th>
+          <th scope="col">Units Left</th>
+          <th scope="col">Status</th>
+        </tr>
+        </thead>
+        <tbody id="army-table">
+
+        @forelse($armies as $army)
+          <tr>
+            <th>{{ $army->id }}</th>
+            <td>{{ $army->name }}</td>
+            <td>{{ $army->units_number }}</td>
+            <td>{{ $army->army_state->title }}</td>
+          </tr>
+        @empty
+
+        @endforelse
+
+        </tbody>
+      </table>
 
     </div>
   </div>
@@ -120,7 +147,7 @@ $(document).on('click', '#add-army-button', function(e){
     // contentType: false,
   }).done(function(data) {
     console.log("OK");
-    console.log(data);
+    // console.log(data);
 
     // Handling form errors
     if (data.errors.name) {
@@ -140,6 +167,22 @@ $(document).on('click', '#add-army-button', function(e){
       $('#attack-strategy-id-error').text(data.errors.attack_strategy_id);
     } else {
       $('#attack').empty();
+    }
+
+    // Adding the newly create army to the list
+    if (data.army) {
+      // console.log(data.army);
+
+      $("#army-table").append(
+        '<tr>\n' +
+          '<th>' + data.army.id + '</th>\n' +
+          '<td>' + data.army.name + '</td>\n' +
+          '<td>' + data.army.units_number + '</td>\n' +
+          '<td>' + 'fighting' + '</td>\n' +
+          // '<td>' + data.army.army_state + '</td>\n' +
+        '</tr>'
+      );
+
     }
 
 

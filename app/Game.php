@@ -12,14 +12,12 @@ class Game extends Model
 
   public function game_status()
   {
-    return $this->belongsTo(GameStatus::class)
-      ->withTimestamps();
+    return $this->belongsTo(GameStatus::class);
   }
 
   public function armies()
   {
-    return $this->hasMany(Army::class)
-      ->withTimestamps();
+    return $this->hasMany(Army::class);
   }
 
 }

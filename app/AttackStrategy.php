@@ -12,7 +12,6 @@ class AttackStrategy extends Model
 
   public function armies()
   {
-    return $this->hasMany(Army::class)
-      ->withTimestamps();
+    return $this->hasMany(Army::class);
   }
 }

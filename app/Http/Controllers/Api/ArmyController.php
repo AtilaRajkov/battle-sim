@@ -19,7 +19,9 @@ class ArmyController extends Controller
 
     $strategies = AttackStrategy::all();
 
-    return view('army.front', compact('game_id','strategies'));
+    $armies = $game->armies;
+
+    return view('army.front', compact('game_id','strategies', 'armies'));
   }
 
 
@@ -50,7 +52,7 @@ class ArmyController extends Controller
 
     $data = [
       'errors' => $errors,
-      'test' => ''
+      'army' => ''
     ];
 
     // Return errors
@@ -63,11 +65,14 @@ class ArmyController extends Controller
     $army->game_id = request('game_id');
     $army->name = request('name');
     $army->units_number = request('units');
-    $army->attack_strategy_id = request('attack_strategy_id');
-    $army->army_state_id 	 = ArmyState::where('title', 'fighting')->first()->id;
+    $army->attack_strategy_id = request( 'attack_strategy_id');
+    $army->army_state_id  = ArmyState::where('title', 'fighting')->first()->id;
     $army->save();
 
     $data['army'] = $army;
+    $army_state = $army->army_state->title;
+    $data['army']['army_state'] = $army_state;
+
 
     return $data;
 

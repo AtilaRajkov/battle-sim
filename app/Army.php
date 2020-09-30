@@ -12,19 +12,16 @@ class Army extends Model
 
   public function game()
   {
-    return $this->belongsTo(Game::class)
-      ->withTimestamps();
+    return $this->belongsTo(Game::class);
   }
 
   public function attack_strategy()
   {
-    return $this->belongsTo(AttackStrategy::class)
-      ->withTimestamps();
+    return $this->belongsTo(AttackStrategy::class);
   }
 
   public function army_state()
   {
-    return $this->belongsTo(ArmyState::class)
-      ->withTimestamps();
+    return $this->belongsTo(ArmyState::class);
   }
 }
