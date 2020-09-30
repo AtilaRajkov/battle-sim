@@ -18,4 +18,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-//Route::get('/create-game', '')
+// **Create a Game**
+Route::get('/create-game', 'Api\GameController@create_game')
+  ->name('create.game');
+
+// **Add Army**
