@@ -13,7 +13,7 @@ class GameController extends Controller
   public function create_game()
   {
 
-    $started_status_id = GameStatus::where('title', 'started')->first()->id;
+    $started_status_id = GameStatus::where('title', 'preparing')->first()->id;
     $started_games = Game::where('game_status_id', $started_status_id)->get();
 
     // Checking how many games are already in progress
