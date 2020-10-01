@@ -1,14 +1,14 @@
 @extends('layout.main')
 
 @section('title')
-  <title>Battlefront</title>>
+  <title>Battlefront</title>
 @endsection
 
 @section('content')
-  <div
-      {{--        style="background-color: lightskyblue;" --}}
-      class="col-6">
-    <h2>Create an Army</h2>
+
+
+  <div class="col-4">
+    <h3>Create an Army</h3>
 
     <form id="army-form" name="army-form">
       @csrf
@@ -55,7 +55,7 @@
       </div>
       <p class="text-danger" id="attack-strategy-id-error"></p>
 
-      <input type="hidden" id="game-id" value="{{$game_id}}">
+      <input type="hidden" id="game-id" value="{{$game->id}}">
 
       <button type="submit"
               class="btn btn-primary" id="add-army-button">
@@ -65,13 +65,12 @@
 
   </div>
 
-  <div
-      {{--        style="background-color: lightcoral;"--}}
-      class="col-6">
+  <div class="col-8">
 
-    <h2>Battle (game id) {{ $game_id }}</h2>
+    <h3>Battle:</h3>
+    <p>Game ID: <b>{{ $game_id }}</b> Turn: <b>{{ $game->turn }}</b></p>
 
-    <table class="table">
+    <table class="table table-sm">
       <thead>
       <tr>
         <th scope="col">ID</th>
@@ -106,9 +105,7 @@
 
     $(document).on('click', '#add-army-button', function(e){
       e.preventDefault();
-
       let url = "{{route('add.army')}}";
-
       let game_id = $("#game-id").val();
       let name = $("#name").val();
       let units = $("#units").val();
@@ -170,7 +167,6 @@
           );
 
         }
-
 
       });
     });

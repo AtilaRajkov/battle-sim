@@ -10,6 +10,14 @@ class Army extends Model
 
   protected $guarded = [];
 
+
+  protected $hidden = [
+    'game_id',
+    'attack_strategy_id',
+    'army_state_id'
+  ];
+
+
   public function game()
   {
     return $this->belongsTo(Game::class);

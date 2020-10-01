@@ -22,7 +22,7 @@ class ArmyController extends Controller
 
     $armies = $game->armies;
 
-    return view('army.front', compact('game_id','strategies', 'armies'));
+    return view('army.front', compact('game', 'game_id','strategies', 'armies'));
   }
 
 
@@ -61,7 +61,7 @@ class ArmyController extends Controller
       return $data;
     }
 
-    // There are no errors:
+    // There are no errors: //
 
     // Creating a new army:
     $army = new Army();
@@ -71,7 +71,6 @@ class ArmyController extends Controller
     $army->attack_strategy_id = request( 'attack_strategy_id');
     $army->army_state_id  = ArmyState::where('title', 'fighting')->first()->id;
     $army->save();
-
 
 
     // Setting the attack_order in the games table
@@ -97,29 +96,20 @@ class ArmyController extends Controller
         'attack_order' => [$army->id]
       ]);
     } else {
-      // If it is not the first army wee just need to add the new army id to the array:
+      // If it is not the first army we just need to add the new army id to the array:
       $attack_order_array[] = $army->id;
 
       $game->update([
         'attack_order' => $attack_order_array
       ]);
 
-
     }
-
-//    $game->update([
-//      'attack_order' =>
-//    ]);
-
-
 
     $data['army'] = $army;
     $army_state = $army->army_state->title;
     $data['army']['army_state'] = $army_state;
 
-
     return $data;
-
 
   }
 

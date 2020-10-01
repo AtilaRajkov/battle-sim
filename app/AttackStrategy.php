@@ -10,6 +10,11 @@ class AttackStrategy extends Model
 
   protected $fillable = ['title'];
 
+  protected $hidden = [
+    'created_at',
+    'updated_at'
+  ];
+
   public function armies()
   {
     return $this->hasMany(Army::class);

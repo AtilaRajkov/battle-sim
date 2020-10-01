@@ -16,6 +16,7 @@ class CreateGamesTable extends Migration
     Schema::create('games', function (Blueprint $table) {
       $table->id();
       //$table->string('name');
+      $table->unsignedBigInteger('turn')->default(0);
       $table->unsignedBigInteger('game_status_id');
       $table->json('attack_order')->nullable();
       $table->timestamps();

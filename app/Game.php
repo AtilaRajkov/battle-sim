@@ -15,6 +15,10 @@ class Game extends Model
     'attack_order' => 'array'
   ];
 
+  protected $hidden = [
+    'game_status_id'
+  ];
+
   public function game_status()
   {
     return $this->belongsTo(GameStatus::class);

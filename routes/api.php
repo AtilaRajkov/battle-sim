@@ -25,3 +25,9 @@ Route::get('/create-game', 'Api\GameController@create_game')
 // **Add army**
 Route::post('/add-army', 'Api\ArmyController@add_army')
   ->name('add.army');
+
+// **List games**
+Route::get('/list-games', 'Api\GameController@list_games')
+  ->name('list.games');
+
+// **Run attack**
