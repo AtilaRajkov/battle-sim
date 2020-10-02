@@ -33,3 +33,7 @@ Route::get('/list-games', 'Api\GameController@list_games')
 // **Run attack**
 Route::post('/run-attack/{game}', 'Api\GameController@run_attack')
   ->name('run-attack');
+
+// ** Autorun **
+Route::post('/autorun/{game}', 'Api\GameController@autorun')
+  ->name('autorun');

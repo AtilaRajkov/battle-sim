@@ -9,6 +9,7 @@ use App\GameStatus;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use function MongoDB\BSON\toJSON;
+use phpDocumentor\Reflection\Types\False_;
 
 class GameController extends Controller
 {
@@ -78,19 +79,49 @@ class GameController extends Controller
 
   public function run_attack(Game $game)
   {
+    $end = NULL;
+
     // If the battle is already finished return a message:
     if ($game->game_status->title == 'finished') {
       $data = [
         'game' => $this->list_games($game->id),
-        'message' => 'This battle is finished.'
+        'message' => 'This battle is finished.',
+
+        'error' => NULL,
+        'turn' => NULL,
+        'end' => true,
+      ];
+      return $data;
+    }
+
+    // Exit if there already 5 battles in progress:
+    $games_running =Game::where('game_status_id', GameStatus::where('title', 'started')->first()->id)
+                      ->get()->count();
+
+    if (
+      $game->game_status->title == 'preparing' &&
+      $games_running >= 5
+    ) {
+      $data = [
+        'message' => 'There already five games running. Please wait until at least is finished.',
+
+        'game' => NULL,
+        'error' => NULL,
+        'turn' => NULL,
+        'end' => true,
       ];
       return $data;
     }
 
     // Checking if there is enough armies for the battle:
-    if ($game->armies->count() < 3) {
+    if ($game->armies->count() < 5) {
       $data = [
-        'error' => 'There needs to be at least 5 armies to begin the battle.'
+        'error' => 'There needs to be at least 5 armies to begin the battle.',
+
+        'game' => NULL,
+        'message' => NULL,
+        'turn' => NULL,
+        'end' => true,
       ];
       return $data;
     }
@@ -147,6 +178,9 @@ class GameController extends Controller
         }
       }
 
+      // Reloading the weapons:
+//      sleep($attacking_army->units_number * 0.01);
+
       // Calculating the Attack chance:
       if (rand(1, 100) <= $attacking_army->units_number) {
         $hit = true;
@@ -184,14 +218,13 @@ class GameController extends Controller
             'attack_order' => $new_attack_order
           ]);
 
-
         } else {
           $targeted_army->update([
             'units_number' => $units_left
           ]);
         }
 
-        // Declaring the winner adn finishing the battle (game):
+        // Declaring the winner and finishing the battle (game):
         if (count($attack_order) == 1) {
           $attacking_army->update([
             'army_state_id' => ArmyState::where('title', 'winner!')->first()->id
@@ -201,12 +234,11 @@ class GameController extends Controller
             'game_status_id' => GameStatus::where('title', 'finished') ->first()->id
           ]);
 
+          $end = true;
 
         }
 
-
       }
-
 
     }
 
@@ -215,18 +247,32 @@ class GameController extends Controller
       'turn' => ++$game->turn
     ]);
 
-    $game = $this->list_games($game->id);
-
-//    return response()->json(['game' => $game]);
-
-//    $game =  (string) $game;
-//    $game = new JsonResponse($game);
-
     return [
-      'game' => $game,
-      'turn' => $game->turn
+      'game' => $this->list_games($game->id),
+      'turn' => $game->turn,
+
+      'message' => NULL,
+      'error' => NULL,
+
+      'end' => $end
     ];
   }
+
+
+  public function autorun(Game $game)
+  {
+
+    $data = $this->run_attack($game);
+
+    if (!$data['end']) {
+
+      return $this->autorun($game);
+
+    }
+    return $data;
+  }
+
+
 
 
 }

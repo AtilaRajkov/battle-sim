@@ -19,7 +19,7 @@ class ArmyStateSeeder extends Seeder
     $states = [
       'fighting',
       'defeated',
-      'winner'
+      'winner!'
     ];
 
     for($i = 0; $i < count($states); $i++)

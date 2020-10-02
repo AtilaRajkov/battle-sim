@@ -80,7 +80,7 @@
       </div>
 
       <div class="col-3">
-        <button class="btn btn-outline-danger btn-sm">
+        <button class="btn btn-outline-danger btn-sm" id="autorun">
           Autorun...
         </button>
       </div>
@@ -115,9 +115,6 @@
 
             @endforelse
 
-
-
-
           </tbody>
         </table>
       </div>
@@ -132,13 +129,13 @@
 @section('script')
 
   <script>
-
-    // Run Attack Button:
-    $(document).on('click', '#run-attack', function(e) {
+    // Autorun Button
+    $(document).on('click', '#autorun', function(e) {
       e.preventDefault();
-      console.log('Attack!');
 
-      let url = "{{route('run-attack', $game->id)}}";
+      console.log('Autorun...');
+
+      let url = "{{route('autorun', $game->id)}}";
 
       $.ajax({
         url: url,
@@ -150,8 +147,11 @@
         // processData: false,
         // contentType: false,
       }).done(function(data) {
-        //console.log("OK");
-        //console.log(data.game);
+
+        console.log('autorun finished.');
+
+        console.log(data);
+        // console.log(data.game);
 
         // Handling form errors
         if (data.error) {
@@ -161,6 +161,7 @@
         }
 
         if (data.game) {
+          console.log(data);
           console.log(data.game);
           $("#army-table").empty();
           $(function() {
@@ -176,10 +177,7 @@
         }
 
         if (data.turn) {
-          console.log(data.turn);
-
           $('#game-turn').empty().append(data.turn);
-
         }
 
         if (data.message) {
@@ -187,7 +185,62 @@
         }
 
 
+      });
 
+
+    });
+
+
+
+
+    // Run Attack Button:
+    $(document).on('click', '#run-attack', function(e) {
+      e.preventDefault();
+      //console.log('Attack!');
+      let url = "{{route('run-attack', $game->id)}}";
+
+      $.ajax({
+        url: url,
+        method: 'POST',
+        data: {
+        },
+        dataType: 'JSON',
+        cache: false
+        // processData: false,
+        // contentType: false,
+      }).done(function(data) {
+
+        console.log(data);
+
+        // Handling form errors
+        if (data.error) {
+          $('#armies-number-error').text(data.error);
+        } else {
+          $('#armies-number-error').empty();
+        }
+
+        if (data.game) {
+          //console.log(data.game);
+          $("#army-table").empty();
+          $(function() {
+            $.each(data.game.armies, function(i, item) {
+              var $tr = $('<tr>').append(
+                $('<th>').text(item.id),
+                $('<td>').text(item.name),
+                $('<td>').text(item.units_number),
+                $('<td>').text(item.army_state.title)
+              ).appendTo('#army-table');
+            });
+          });
+        }
+
+        if (data.turn) {
+          $('#game-turn').empty().append(data.turn);
+        }
+
+        if (data.message) {
+          $('#battle-finished').text(data.message);
+        }
 
       });
 
@@ -205,10 +258,10 @@
       let units = $("#units").val();
       let attack_strategy_id = $("#attack-strategy-id").val();
 
-      console.log('game_id: ' + game_id);
-      console.log('name: ' + name);
-      console.log('units: ' + units);
-      console.log('strategy: ' + attack_strategy_id);
+      // console.log('game_id: ' + game_id);
+      // console.log('name: ' + name);
+      // console.log('units: ' + units);
+      // console.log('strategy: ' + attack_strategy_id);
 
       $.ajax({
         url: url,
