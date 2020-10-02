@@ -29,7 +29,7 @@
       <div class="form-group">
         <label for="units">Number of Units</label>
         <br>
-        <small>(Your army can have 80 to 100 units)</small>
+        <small>(Your army can have from 80 to 100 units)</small>
         <input type="number"
                class="form-control"
                id="units"
@@ -68,7 +68,25 @@
   <div class="col-8">
 
     <h3>Battle:</h3>
-    <p>Game ID: <b>{{ $game_id }}</b> Turn: <b>{{ $game->turn }}</b></p>
+    <div class="row">
+      <div class="col-6">
+        <p>Game ID: <b>{{ $game_id }}</b> Turn: <b>{{ $game->turn }}</b></p>
+      </div>
+
+      <div class="col-3">
+        <button class="btn btn-danger btn-sm" id="run-attack">
+          Attack!
+        </button>
+      </div>
+
+      <div class="col-3">
+        <button class="btn btn-outline-danger btn-sm">
+          Autorun...
+        </button>
+      </div>
+
+      <p id="armies-number-error" class="text-danger"></p>
+    </div>
 
     <table class="table table-sm">
       <thead>
@@ -103,6 +121,44 @@
 
   <script>
 
+    // Run Attack Button:
+    $(document).on('click', '#run-attack', function(e) {
+      e.preventDefault();
+      console.log('Attack!');
+
+      let url = "{{route('run-attack', $game->id)}}";
+
+      $.ajax({
+        url: url,
+        method: 'POST',
+        data: {
+        },
+        dataType: 'JSON',
+        cache: false
+        // processData: false,
+        // contentType: false,
+      }).done(function(data) {
+        console.log("OK");
+        console.log(data.game);
+
+        // Handling form errors
+        if (data.error) {
+          $('#armies-number-error').text(data.error);
+        } else {
+          $('#armies-number-error').empty();
+        }
+
+
+
+
+      });
+
+    });
+
+
+
+
+    // Add an Army button:
     $(document).on('click', '#add-army-button', function(e){
       e.preventDefault();
       let url = "{{route('add.army')}}";

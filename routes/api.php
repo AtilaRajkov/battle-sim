@@ -31,3 +31,5 @@ Route::get('/list-games', 'Api\GameController@list_games')
   ->name('list.games');
 
 // **Run attack**
+Route::post('/run-attack/{game}', 'Api\GameController@run_attack')
+  ->name('run-attack');
