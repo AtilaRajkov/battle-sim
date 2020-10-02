@@ -70,7 +70,7 @@
     <h3>Battle:</h3>
     <div class="row">
       <div class="col-6">
-        <p>Game ID: <b>{{ $game_id }}</b> Turn: <b>{{ $game->turn }}</b></p>
+        <p>Game ID: <b>{{ $game_id }}</b> Turn: <b><span id="game-turn">{{ $game->turn }}</span></b></p>
       </div>
 
       <div class="col-3">
@@ -85,33 +85,45 @@
         </button>
       </div>
 
-      <p id="armies-number-error" class="text-danger"></p>
     </div>
 
-    <table class="table table-sm">
-      <thead>
-      <tr>
-        <th scope="col">ID</th>
-        <th scope="col">Name</th>
-        <th scope="col">Units Left</th>
-        <th scope="col">Status</th>
-      </tr>
-      </thead>
-      <tbody id="army-table">
+    <div class="row">
+      <div class="col-12">
 
-      @forelse($armies as $army)
-        <tr>
-          <th>{{ $army->id }}</th>
-          <td>{{ $army->name }}</td>
-          <td>{{ $army->units_number }}</td>
-          <td>{{ $army->army_state->title }}</td>
-        </tr>
-      @empty
+        <p id="armies-number-error" class="text-danger"></p>
+        <p id="battle-finished" class="text-success"></p>
 
-      @endforelse
+        <table class="table table-sm">
+          <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Units Left</th>
+            <th scope="col">Status</th>
+          </tr>
+          </thead>
+          <tbody id="army-table">
 
-      </tbody>
-    </table>
+            @forelse($armies as $army)
+              <tr>
+              <th>{{ $army->id }}</th>
+              <td>{{ $army->name }}</td>
+              <td>{{ $army->units_number }}</td>
+              <td>{{ $army->army_state->title }}</td>
+            </tr>
+            @empty
+
+            @endforelse
+
+
+
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
 
   </div>
 @endsection
@@ -138,14 +150,40 @@
         // processData: false,
         // contentType: false,
       }).done(function(data) {
-        console.log("OK");
-        console.log(data.game);
+        //console.log("OK");
+        //console.log(data.game);
 
         // Handling form errors
         if (data.error) {
           $('#armies-number-error').text(data.error);
         } else {
           $('#armies-number-error').empty();
+        }
+
+        if (data.game) {
+          console.log(data.game);
+          $("#army-table").empty();
+          $(function() {
+            $.each(data.game.armies, function(i, item) {
+              var $tr = $('<tr>').append(
+                $('<th>').text(item.id),
+                $('<td>').text(item.name),
+                $('<td>').text(item.units_number),
+                $('<td>').text(item.army_state.title)
+              ).appendTo('#army-table');
+            });
+          });
+        }
+
+        if (data.turn) {
+          console.log(data.turn);
+
+          $('#game-turn').empty().append(data.turn);
+
+        }
+
+        if (data.message) {
+          $('#battle-finished').text(data.message);
         }
 
 
@@ -187,6 +225,10 @@
         // contentType: false,
       }).done(function(data) {
         console.log("OK");
+
+        if (data.message) {
+          $('#battle-finished').text(data.message);
+        }
 
         // Handling form errors
         if (data.errors.name) {

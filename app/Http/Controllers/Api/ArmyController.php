@@ -28,6 +28,17 @@ class ArmyController extends Controller
 
   public function add_army()
   {
+
+    // Checking if the battle is finished:
+    if (
+      Game::where('id', request()->game_id)->first()->game_status_id ==
+      GameStatus::where('title', 'finished')->first()->id
+    ) {
+      return [
+        'message' => 'This battle is finished.'
+      ];
+    }
+
     $errors = [];
 
     if (empty(request()->name)) {

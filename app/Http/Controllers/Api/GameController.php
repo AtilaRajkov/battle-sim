@@ -8,6 +8,7 @@ use App\Game;
 use App\GameStatus;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use function MongoDB\BSON\toJSON;
 
 class GameController extends Controller
 {
@@ -19,12 +20,24 @@ class GameController extends Controller
   }
 
 
-  public function list_games()
+  public function list_games($game_id = NULL)
   {
-    $games = Game::with('game_status')
-      ->with('armies.attack_strategy')
-      ->with('armies.army_state')
-      ->get();
+    if ($game_id != NULL) {
+      $games = Game::where('id', $game_id)
+        ->with('game_status')
+        ->with('armies.attack_strategy')
+        ->with('armies.army_state')
+        ->first();
+
+      return $games;
+    } else {
+      $games = Game::with('game_status')
+        ->with('armies.attack_strategy')
+        ->with('armies.army_state')
+        ->get();
+    }
+
+
 
     return response()->json(['data' => $games]);
   }
@@ -68,7 +81,8 @@ class GameController extends Controller
     // If the battle is already finished return a message:
     if ($game->game_status->title == 'finished') {
       $data = [
-        'message' => 'This battle is already finished.'
+        'game' => $this->list_games($game->id),
+        'message' => 'This battle is finished.'
       ];
       return $data;
     }
@@ -201,8 +215,16 @@ class GameController extends Controller
       'turn' => ++$game->turn
     ]);
 
+    $game = $this->list_games($game->id);
+
+//    return response()->json(['game' => $game]);
+
+//    $game =  (string) $game;
+//    $game = new JsonResponse($game);
+
     return [
       'game' => $game,
+      'turn' => $game->turn
     ];
   }
 
