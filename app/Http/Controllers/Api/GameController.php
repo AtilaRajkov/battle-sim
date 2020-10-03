@@ -79,7 +79,7 @@ class GameController extends Controller
 
   public function run_attack(Game $game)
   {
-    $end = NULL;
+    $end = null;
 
     // If the battle is already finished return a message:
     if ($game->game_status->title == 'finished') {
@@ -94,8 +94,9 @@ class GameController extends Controller
       return $data;
     }
 
-    // Exit if there already 5 battles in progress:
-    $games_running =Game::where('game_status_id', GameStatus::where('title', 'started')->first()->id)
+    // Exit if there are already 5 battles in progress:
+    $games_running =Game::where('id', '<>', $game->id)
+                      ->where('game_status_id', GameStatus::where('title', 'started')->first()->id)
                       ->get()->count();
 
     if (
@@ -103,7 +104,7 @@ class GameController extends Controller
       $games_running >= 5
     ) {
       $data = [
-        'message' => 'There already five games running. Please wait until at least is finished.',
+        'message' => 'There are already five games running. Please wait until at least one is finished.',
 
         'game' => NULL,
         'error' => NULL,
@@ -179,7 +180,7 @@ class GameController extends Controller
       }
 
       // Reloading the weapons:
-//      sleep($attacking_army->units_number * 0.01);
+      sleep($attacking_army->units_number * 0.01);
 
       // Calculating the Attack chance:
       if (rand(1, 100) <= $attacking_army->units_number) {
@@ -238,20 +239,27 @@ class GameController extends Controller
 
         }
 
-      }
+      } //if ($hit)
 
-    }
+    } // foreach($attack_order as $army_id)
+
 
     // Update the turn:
     $game->update([
       'turn' => ++$game->turn
     ]);
 
+    if ($end) {
+      $message = 'The battle is finished.';
+    } else {
+      $message = NULL;
+    }
+
     return [
       'game' => $this->list_games($game->id),
       'turn' => $game->turn,
 
-      'message' => NULL,
+      'message' => $message,
       'error' => NULL,
 
       'end' => $end
@@ -261,7 +269,6 @@ class GameController extends Controller
 
   public function autorun(Game $game)
   {
-
     $data = $this->run_attack($game);
 
     if (!$data['end']) {

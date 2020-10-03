@@ -90,8 +90,8 @@
     <div class="row">
       <div class="col-12">
 
-        <p id="armies-number-error" class="text-danger"></p>
-        <p id="battle-finished" class="text-success"></p>
+        <h5 id="armies-number-error" class="text-danger"></h5>
+        <h5 id="battle-finished" class="text-success"></h5>
 
         <table class="table table-sm">
           <thead>
@@ -129,11 +129,10 @@
 @section('script')
 
   <script>
+
     // Autorun Button
     $(document).on('click', '#autorun', function(e) {
       e.preventDefault();
-
-      console.log('Autorun...');
 
       let url = "{{route('autorun', $game->id)}}";
 
@@ -148,10 +147,7 @@
         // contentType: false,
       }).done(function(data) {
 
-        console.log('autorun finished.');
 
-        console.log(data);
-        // console.log(data.game);
 
         // Handling form errors
         if (data.error) {
@@ -161,8 +157,7 @@
         }
 
         if (data.game) {
-          console.log(data);
-          console.log(data.game);
+
           $("#army-table").empty();
           $(function() {
             $.each(data.game.armies, function(i, item) {
@@ -192,11 +187,17 @@
 
 
 
-
     // Run Attack Button:
     $(document).on('click', '#run-attack', function(e) {
       e.preventDefault();
-      //console.log('Attack!');
+
+      runAttack();
+
+    });
+
+
+    function runAttack() {
+
       let url = "{{route('run-attack', $game->id)}}";
 
       $.ajax({
@@ -205,12 +206,12 @@
         data: {
         },
         dataType: 'JSON',
-        cache: false
+        cache: false,
+        async: false,
         // processData: false,
         // contentType: false,
       }).done(function(data) {
 
-        console.log(data);
 
         // Handling form errors
         if (data.error) {
@@ -220,7 +221,6 @@
         }
 
         if (data.game) {
-          //console.log(data.game);
           $("#army-table").empty();
           $(function() {
             $.each(data.game.armies, function(i, item) {
@@ -240,11 +240,15 @@
 
         if (data.message) {
           $('#battle-finished').text(data.message);
+        } else {
+          $('#battle-finished').empty();
         }
+
 
       });
 
-    });
+
+    }
 
 
 
@@ -257,11 +261,6 @@
       let name = $("#name").val();
       let units = $("#units").val();
       let attack_strategy_id = $("#attack-strategy-id").val();
-
-      // console.log('game_id: ' + game_id);
-      // console.log('name: ' + name);
-      // console.log('units: ' + units);
-      // console.log('strategy: ' + attack_strategy_id);
 
       $.ajax({
         url: url,
@@ -277,7 +276,6 @@
         // processData: false,
         // contentType: false,
       }).done(function(data) {
-        console.log("OK");
 
         if (data.message) {
           $('#battle-finished').text(data.message);
@@ -305,7 +303,6 @@
 
         // Adding the newly create army to the list
         if (data.army) {
-          // console.log(data.army);
 
           $("#army-table").append(
             '<tr>\n' +
